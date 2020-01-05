@@ -10,6 +10,7 @@ from controller.smtp_controller import GMailController
 from utils_package.data_controller.scripts.email_controller.email_audit_queries import AuditWriter
 from utils_package.data_controller.pg_config import PGConfig
 from datetime import datetime
+from utils_package.py_utils.logger import logger
 
 
 class ContactHandler(object):
@@ -20,8 +21,8 @@ class ContactHandler(object):
         """ Initialize class variables """
         self.record_validation = RecordValidation()
         self.audit_writer = AuditWriter()
-        self.gmail = GMailController()
         self.config = PGConfig()
+        self.gmail = GMailController(self.config.get_smtp_dict('primary_gmail'))
 
     def contact_form_entry(self, name, email, message):
         """
@@ -33,12 +34,13 @@ class ContactHandler(object):
         """
         # Validate that the email address associated is eligible for contact
         response = self.record_validation.validate_rule_for_contact(email)
-        if response['validation']:
+        if response['validation'] is True:
             error_message = self.__record_validation_error_handler(response)
             error_status = 429
             return error_status, error_message['display_message'], error_message
         else:
-            if self.send_contact_form_email(name, email, message):
+            chk = self.send_contact_form_email(name, email, message)
+            if chk is True:
                 record_dict = {
                     'strname': name,
                     'stremailaddress': email,
@@ -54,7 +56,8 @@ class ContactHandler(object):
                     'display_message': 'Your message has been sent! I will be in contact shortly.'
                 }
             else:
-                return Exception('Issues sending message')
+                logger.error('Issues sending message')
+                return 500, 'Internal Server Error', email
             return response_status, response_message['display_message'], response_message
 
     def send_contact_form_email(self, name, email_address, message):
@@ -65,16 +68,15 @@ class ContactHandler(object):
         :param message: Message that is to be sent
         :return: Success or failure message
         """
-        contact_date = datetime.strftime(datetime.now(), '%x')
+        contact_time = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S.%f')
         email_message = """
         Timestamp: %s
         Name: %s
         eMail Address: %s
         Message: %s
-        """ % (contact_date, name, email_address, message)
-        subject = 'Contact from %s | %s' % (name, contact_date)
-        login_dict = self.config.get_smtp_dict('primary_gmail')
-        response = self.gmail.attempt_send_message(login_dict, email_message, self.PRIMARY_ADDRESS, subject)
+        """ % (contact_time, name, email_address, message)
+        subject = 'Contact from %s | %s' % (name, contact_time)
+        response = self.gmail.attempt_send_message(email_message, self.PRIMARY_ADDRESS, subject)
         return response
 
     @staticmethod
@@ -95,18 +97,18 @@ class ContactHandler(object):
         if 'DAY' in error_response['val_reason']:
             message['violation_code'].append(1)
             message['violation_reasons'].append('Daily contact violation')
-            message['display_message'].append('Over three times in the last day. ')
+            message['display_message'] = message['display_message'] + 'Over three times in the last day. '
         if 'WEEK' in error_response['val_reason']:
             message['violation_code'].append(2)
             message['violation_reasons'].append('Weekly contact violation')
-            message['display_message'].append('More than five times in the past week. ')
+            message['display_message'] = message['display_message'] + 'More than five times in the past week. '
         if 'MONTH' in error_response['val_reason']:
             message['violation_code'].append(3)
             message['violation_reasons'].append('Monthly contact violation')
-            message['display_message'].append('Over twenty times in the last month. ')
+            message['display_message'] = message['display_message'] + 'Over twenty times in the last month. '
         if 'ANNUAL' in error_response['val_reason']:
             message['violation_code'].append(4)
             message['violation_reasons'].append('Annual contact violation')
-            message['display_message'].append('More than forty times in the year month. ')
+            message['display_message'] = message['display_message'] + 'More than forty times in the year month. '
 
         return message

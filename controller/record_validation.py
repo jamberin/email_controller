@@ -29,10 +29,14 @@ class RecordValidation(object):
         }
 
         # Collect all contact counts
-        day_contact = self.audit_reader.get_record_for_email_within_past_days(contact_email, 1)
-        week_contact = self.audit_reader.get_record_for_email_within_past_days(contact_email, 7)
-        month_contact = self.audit_reader.get_record_for_email_within_past_days(contact_email, 30)
-        year_contact = self.audit_reader.get_record_for_email_within_past_days(contact_email, 365)
+        day_contact = self.audit_reader.get_record_for_email_within_past_days(contact_email, 0)
+        logger.info('Day Count: %s' % str(day_contact))
+        week_contact = self.audit_reader.get_record_for_email_within_past_days(contact_email, 6)
+        logger.info('Week Count: %s' % str(week_contact))
+        month_contact = self.audit_reader.get_record_for_email_within_past_days(contact_email, 29)
+        logger.info('Month Count: %s' % str(month_contact))
+        year_contact = self.audit_reader.get_record_for_email_within_past_days(contact_email, 364)
+        logger.info('Year Count: %s' % str(year_contact))
 
         # Verify all contact counts
         if day_contact[0] >= 3:

@@ -35,3 +35,35 @@ class TestEmailController(TestCase):
         # 3. Confirm contact form record stored
         response = self.audit_reader.get_all_record_for_email(email)
         self.assertIsNotNone(response)
+
+    def test_violation(self):
+        """ Send more than 3 emails in one day
+        1. Set up test data
+        2. Send data to contact form
+        3. Confirm contact form records stored
+        4. Validate the error response on the last run
+        """
+        # 1. Set up test data
+        name = 'John Denver'
+        email = 'john.denver%s@website.net' % str(random.randint(0000, 9999))
+        message = 'Test simple plain text message'
+
+        # 2. Send data to contact form
+        r = range(3)
+        for _ in r:
+            status_code, display_message, response = self.contact.contact_form_entry(name, email, message +
+                                                                                     ' %s' % str(_))
+            self.assertEqual(201, status_code)
+            self.assertEqual('Your message has been sent! I will be in contact shortly.', display_message)
+            self.assertIsNotNone(response)
+
+        # 3. Confirm contact form records stored
+        response = self.audit_reader.get_all_record_for_email(email)
+        self.assertIsNotNone(response)
+
+        # 4. Validate the error response on the last run
+        status_code, display_message, response = self.contact.contact_form_entry(name, email, message)
+        self.assertEqual(429, status_code)
+        self.assertEqual('It looks like you have tried to contact too many times. Over three times in the last day. ',
+                         display_message)
+        self.assertIsNotNone(response)

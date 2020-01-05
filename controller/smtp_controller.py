@@ -2,7 +2,7 @@
 > Will handlge the default SMTP control to format HTML and send emails
 > Configured for gmail only currently
 """
-from smtplib import SMTPException, SMTPResponseException, SMTPConnectError, SMTPHeloError, SMTP_SSL
+from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTPNotSupportedError, SMTP
 from utils_package.py_utils.logger import logger
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -25,14 +25,21 @@ def log_email_payload(login_dict, message, recipient, subject):
 class GMailController(object):
     """ Main controller for SMTP """
 
-    def __init__(self):
-        """ Initialize class variables """
-        self.server = SMTP_SSL('smtp.gmail.com', 465)
+    def __init__(self, login_dict):
+        """
+        Initialize class variables
+        :param login_dict: login_dict: Dictionary of login credentials [user, pass]
+        """
+        self.to_address = login_dict['user']
+        server = SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(login_dict['user'], login_dict['pass'])
+        self.server = server
 
-    def attempt_send_message(self, login_dict, message, recipient, subject, message_type='text'):
+    def attempt_send_message(self, message, recipient, subject, message_type='text'):
         """
         Attempts to send the message
-        :param login_dict: Dictionary of login credentials [user, pass]
+        :param
         :param message: HTML message object
         :param recipient: Recipient of the email
         :param subject: Subject line of the email
@@ -56,23 +63,9 @@ class GMailController(object):
         html_msg.attach(message_builder)
 
         try:
-            self.server.ehlo()
-            self.server.login(login_dict['user'], login_dict['pass'])
-            self.server.sendmail(login_dict['user'], recipient, html_msg.as_string())
-            self.server.quit()
-            logger.info('Successfully sent email')
-        except TypeError:
-            logger.error('Email not sent, issues with data types')
-            log_email_payload(login_dict, message, recipient, subject)
+            self.server.sendmail(self.to_address, recipient, html_msg.as_string())
+        except SMTPDataError or SMTPSenderRefused or SMTPRecipientsRefused or SMTPHeloError or SMTPNotSupportedError:
+            logger.error('Issue with sending email')
             chk = False
-        except SMTPException or SMTPResponseException:
-            logger.error('Email not sent, exception with SMTP')
-            log_email_payload(login_dict, message, recipient, subject)
-            chk = False
-        except SMTPConnectError or SMTPHeloError:
-            logger.error('Email not sent, error with SMTP')
-            log_email_payload(login_dict, message, recipient, subject)
-            chk = False
-        finally:
-            logger.info('Completed email send attempt')
-            return chk
+        logger.info('Successfully sent email')
+        return chk
