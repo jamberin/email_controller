@@ -6,6 +6,7 @@ Rules:
 3. Less than 40 contacts within the past year
 """
 from utils_package.data_controller.scripts.email_controller.email_audit_queries import AuditReader
+from utils_package.data_controller.scripts.email_controller.contact_violations_queries import ViolationsWriter
 from utils_package.py_utils.logger import logger
 
 
@@ -15,6 +16,7 @@ class RecordValidation(object):
         """ Initialize Class Variables """
         # Queries
         self.audit_reader = AuditReader()
+        self.violations_writer = ViolationsWriter()
 
     def validate_rule_for_contact(self, contact_email):
         """
@@ -26,6 +28,12 @@ class RecordValidation(object):
         response = {
             'validation': False,
             'val_reason': []
+        }
+
+        # Violation dict for tracking violations
+        violation_dict = {
+            'strViolationType': None,
+            'strViolationAddress': contact_email
         }
 
         # Collect all contact counts
@@ -42,19 +50,28 @@ class RecordValidation(object):
         if day_contact[0] >= 3:
             response['validation'] = True
             response['val_reason'].append('DAY')
+            violation_dict['strViolationType'] = 'DAY'
             logger.warning('Rule violation: Daily Contact limit reacheacd: %s' % contact_email)
         if week_contact[0] >= 5:
             response['validation'] = True
             response['val_reason'].append('WEEK')
+            violation_dict['strViolationType'] = 'WEEK'
             logger.warning('Rule violation: Weekly Contact limit reacheacd: %s' % contact_email)
         if month_contact[0] >= 20:
             response['validation'] = True
             response['val_reason'].append('MONTH')
+            violation_dict['strViolationType'] = 'MONTH'
             logger.warning('Rule violation: Monthly Contact limit reacheacd: %s' % contact_email)
         if year_contact[0] >= 40:
             response['validation'] = True
             response['val_reason'].append('ANNUAL')
+            violation_dict['strViolationType'] = 'ANNUAL'
             logger.warning('Rule violation: Yearly Contact limit reacheacd: %s' % contact_email)
+
+        # Write validation error if applicable
+        if response['validation']:
+            assert violation_dict['strViolationType'] is not None
+            self.violations_writer.insert_new_record(violation_dict)
 
         # TODO BUILD QUEUE TO HANDLE RESPONSES TO USERS
         # Include logic to send an email to the user denoting response
