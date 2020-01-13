@@ -8,7 +8,7 @@
 from controller.record_validation import RecordValidation
 from controller.smtp_controller import GMailController
 from utils_package.data_controller.scripts.email_controller.email_audit_queries import AuditWriter
-from utils_package.data_controller.pg_config import PGConfig
+from utils_package.data_controller.json_config import JSONConfig
 from datetime import datetime
 from utils_package.py_utils.logger import logger
 
@@ -21,7 +21,7 @@ class ContactHandler(object):
         """ Initialize class variables """
         self.record_validation = RecordValidation()
         self.audit_writer = AuditWriter()
-        self.config = PGConfig()
+        self.config = JSONConfig()
         self.gmail = GMailController(self.config.get_smtp_dict('primary_gmail'))
 
     def contact_form_entry(self, name, email, message):

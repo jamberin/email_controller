@@ -4,8 +4,10 @@
 """
 from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTPNotSupportedError, SMTP
 from utils_package.py_utils.logger import logger
+from utils_package.py_utils import primary_utils
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import codecs
 
 
 def log_email_payload(login_dict, message, recipient, subject):
@@ -20,6 +22,17 @@ def log_email_payload(login_dict, message, recipient, subject):
     logger.debug('Message: %s' % str(message))
     logger.debug('Subject: %s' % subject)
     logger.debug('Recipient: %s' % recipient)
+
+
+def get_html_template(template_location):
+    """
+    Return the HTML content of the template file
+    :param template_location: Location of the file within the email templates directory
+    :return: HTML template
+    """
+    full_location = '/email_templates/' + template_location
+    f = codecs.open(full_location, 'r')
+    return f
 
 
 class GMailController(object):
