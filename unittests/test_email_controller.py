@@ -1,9 +1,9 @@
-""" Unit tests for the email controller application
+""" Unit tests for the email email_controller application
 > TODO Add tests for rules violations
 """
 import random
 from unittest import TestCase
-from controller.contact_handler import ContactHandler
+from email_controller.contact_handler import ContactHandler
 from utils_package.data_controller.scripts.email_controller.email_audit_queries import AuditReader
 
 

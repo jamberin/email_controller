@@ -1,5 +1,5 @@
 """ Unit tests for the response handler application """
-from controller.response_handler import ResponseHandler
+from email_controller.response_handler import ResponseHandler
 from unittest import TestCase
 
 

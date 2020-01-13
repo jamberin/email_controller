@@ -1,7 +1,7 @@
 """ Handler to respond to and log after a user's contact
 > Sends a response email to a user
 """
-from controller.smtp_controller import GMailController, get_html_template
+from email_controller.smtp_controller import GMailController, get_html_template
 from utils_package.data_controller.json_config import JSONConfig
 from utils_package.py_utils import primary_utils
 

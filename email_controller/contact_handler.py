@@ -5,8 +5,8 @@
 > > > Give a status code and return the expected error messaging
 > > > TODO LOG INSTANCE IN ERROR HANDLER
 """
-from controller.record_validation import RecordValidation
-from controller.smtp_controller import GMailController
+from email_controller.record_validation import RecordValidation
+from email_controller.smtp_controller import GMailController
 from utils_package.data_controller.scripts.email_controller.email_audit_queries import AuditWriter
 from utils_package.data_controller.json_config import JSONConfig
 from datetime import datetime

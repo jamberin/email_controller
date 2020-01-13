@@ -1,4 +1,4 @@
-""" Primary controller for SMTP control
+""" Primary email_controller for SMTP control
 > Will handlge the default SMTP control to format HTML and send emails
 > Configured for gmail only currently
 """
@@ -37,7 +37,7 @@ def get_html_template(template_location):
 
 
 class GMailController(object):
-    """ Main controller for SMTP """
+    """ Main email_controller for SMTP """
 
     def __init__(self, login_dict):
         """
