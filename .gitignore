@@ -131,3 +131,4 @@ dmypy.json
 # PyCharm Custom Ignores
 .DS_Store
 .idea
+*.save
