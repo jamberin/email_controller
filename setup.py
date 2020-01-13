@@ -5,7 +5,7 @@ with open('README.md', 'r') as read_me:
 
 setuptools.setup(
     name='email_controller',
-    version='0.0.1',
+    version='0.0.2',
     author='James Beringer',
     author_email='jamberin@gmail.com',
     description='Package for just basic SMTP email sending',
