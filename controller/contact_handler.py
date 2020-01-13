@@ -68,14 +68,14 @@ class ContactHandler(object):
         :param message: Message that is to be sent
         :return: Success or failure message
         """
-        contact_time = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S.%f')
+        date_of_contact = datetime.strftime(datetime.now(), '%x')
         email_message = """
         Timestamp: %s
         Name: %s
         eMail Address: %s
         Message: %s
-        """ % (contact_time, name, email_address, message)
-        subject = 'Contact from %s | %s' % (name, contact_time)
+        """ % (date_of_contact, name, email_address, message)
+        subject = 'Contact from %s | %s' % (name, date_of_contact)
         response = self.gmail.attempt_send_message(email_message, self.PRIMARY_ADDRESS, subject)
         return response
 
