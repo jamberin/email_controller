@@ -76,5 +76,6 @@ class RecordValidation(object):
         # TODO BUILD QUEUE TO HANDLE RESPONSES TO USERS
         # Include logic to send an email to the user denoting response
         # Find way to handle contact violation management, perhaps IP blocking
+        # For now, just generate way to send canned response for good responses only
 
         return response
