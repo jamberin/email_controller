@@ -8,7 +8,6 @@ from utils_package.py_utils import primary_utils
 
 class ResponseHandler(object):
     """ Handles responses to users """
-    PRIMARY_ADDRESS = 'jamberin@gmail.com'
 
     def __init__(self):
         """ Initialize class variables """
@@ -24,5 +23,5 @@ class ResponseHandler(object):
         """
         template = get_html_template('contact_response.html')
         subject = 'beringersolutions.com | Thanks for reaching out!'
-        response = self.gmail.attempt_send_message(template, email_address, subject)
+        response = self.gmail.attempt_send_message(template, email_address, subject, message_type='html')
         return response

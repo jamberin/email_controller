@@ -2,7 +2,7 @@
 > Will handlge the default SMTP control to format HTML and send emails
 > Configured for gmail only currently
 """
-from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTPNotSupportedError, SMTP
+from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTP
 from utils_package.py_utils.logger import logger
 from utils_package.py_utils import primary_utils
 from email.mime.multipart import MIMEMultipart
@@ -30,8 +30,9 @@ def get_html_template(template_location):
     :param template_location: Location of the file within the email templates directory
     :return: HTML template
     """
-    full_location = '/email_templates/' + template_location
+    full_location = '../email_templates/' + template_location
     f = codecs.open(full_location, 'r')
+    f = f.read()
     return f
 
 
@@ -68,7 +69,7 @@ class GMailController(object):
         if message_type.lower() == 'text':
             message_builder = MIMEText(message, 'plain')
         elif message_type.lower() == 'html':
-            message_builder = MIMEText(message, 'html')
+            message_builder = MIMEText(str(message), 'html')
         else:
             logger.error('Message type not recognized')
             raise Exception('Message type not recognized')
@@ -77,7 +78,7 @@ class GMailController(object):
 
         try:
             self.server.sendmail(self.to_address, recipient, html_msg.as_string())
-        except SMTPDataError or SMTPSenderRefused or SMTPRecipientsRefused or SMTPHeloError or SMTPNotSupportedError:
+        except SMTPDataError or SMTPSenderRefused or SMTPRecipientsRefused or SMTPHeloError:
             logger.error('Issue with sending email')
             chk = False
         logger.info('Successfully sent email')
