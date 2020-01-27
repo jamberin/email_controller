@@ -72,7 +72,7 @@ class GMailController(object):
         html_msg['To'] = recipient
 
         if message_type.lower() == 'text':
-            message_builder = MIMEText(message.render(), 'plain')
+            message_builder = MIMEText(message, 'plain')
         elif message_type.lower() == 'html':
             message_builder = MIMEText(str(message), 'html')
         else:
