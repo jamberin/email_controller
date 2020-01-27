@@ -4,10 +4,13 @@
 """
 from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTP
 from utils_package.py_utils.logger import logger
-from utils_package.py_utils import primary_utils
+from utils_package.data_controller.json_config import JSONConfig
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import codecs
+
+# Declarations
+json_config = JSONConfig()
 
 
 def log_email_payload(login_dict, message, recipient, subject):
@@ -24,15 +27,17 @@ def log_email_payload(login_dict, message, recipient, subject):
     logger.debug('Recipient: %s' % recipient)
 
 
-def get_html_template(template_location):
+def get_html_template(template_name):
     """
     Return the HTML content of the template file
-    :param template_location: Location of the file within the email templates directory
+    :param template_name: Location of the file within the email templates directory
     :return: HTML template
     """
-    full_location = '../email_templates/' + template_location
-    f = codecs.open(full_location, 'r')
-    f = f.read()
+    template_dir = json_config.get_email_controller_config('directories')['templates']
+    template_location = template_dir + template_name
+    file = codecs.open(template_location, 'r')
+    f = file.read()
+    file.close()
     return f
 
 
@@ -67,7 +72,7 @@ class GMailController(object):
         html_msg['To'] = recipient
 
         if message_type.lower() == 'text':
-            message_builder = MIMEText(message, 'plain')
+            message_builder = MIMEText(message.render(), 'plain')
         elif message_type.lower() == 'html':
             message_builder = MIMEText(str(message), 'html')
         else:
