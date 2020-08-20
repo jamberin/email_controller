@@ -44,13 +44,15 @@ def get_html_template(template_name):
 class GMailController(object):
     """ Main email_controller for SMTP """
 
-    def __init__(self, login_dict):
+    def __init__(self, login_dict, server, port):
         """
         Initialize class variables
         :param login_dict: login_dict: Dictionary of login credentials [user, pass]
+        :param server: SMTP server name
+        :param port: Port for SMTP traffic
         """
         self.to_address = login_dict['user']
-        server = SMTP('smtp.gmail.com', 587)
+        server = SMTP(server, port)
         server.starttls()
         server.login(login_dict['user'], login_dict['pass'])
         self.server = server

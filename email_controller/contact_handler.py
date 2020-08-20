@@ -1,6 +1,6 @@
 """ Handler to get and log user's contact in database
 > Checks to see if the user is violating the contact rules
-> > If user is eligble for contact, set the email in the database
+> > If user is eligible for contact, set the email in the database
 > > If the user has violated one of the contact rules:
 > > > Give a status code and return the expected error messaging
 > > > TODO LOG INSTANCE IN ERROR HANDLER
@@ -8,21 +8,21 @@
 from email_controller.record_validation import RecordValidation
 from email_controller.smtp_controller import GMailController
 from utils_package.data_controller.scripts.email_controller.email_audit_queries import AuditWriter
-from utils_package.data_controller.json_config import JSONConfig
 from datetime import datetime
 from utils_package.py_utils.logger import logger
+from base_configurations import BaseConfigurations, VARS
 
 
 class ContactHandler(object):
     """ Handles contact form entries """
-    PRIMARY_ADDRESS = 'jamberin@gmail.com'
+    PRIMARY_ADDRESS = VARS['contact_handler.primary_address.email']
 
     def __init__(self):
         """ Initialize class variables """
         self.record_validation = RecordValidation()
         self.audit_writer = AuditWriter()
-        self.config = JSONConfig()
-        self.gmail = GMailController(self.config.get_smtp_dict('primary_gmail'))
+        self.smtp_config = BaseConfigurations().smtp_configs()
+        self.gmail = GMailController(self.smtp_config['login_dict'], self.smtp_config['name'], self.smtp_config['port'])
 
     def contact_form_entry(self, name, email, message):
         """
