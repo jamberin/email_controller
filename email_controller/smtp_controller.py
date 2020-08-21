@@ -4,14 +4,10 @@
 """
 from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTP
 from utils_package.py_utils.logger import logger
-from utils_package.data_controller.json_config import JSONConfig
 from base_configurations import DIRS
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import codecs
-
-# Declarations
-json_config = JSONConfig()
 
 
 def log_email_payload(login_dict, message, recipient, subject):
