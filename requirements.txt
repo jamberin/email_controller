@@ -1,2 +1,3 @@
 jbtech-utils-package
 psycopg2
+requests

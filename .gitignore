@@ -133,3 +133,4 @@ dmypy.json
 .idea
 *.save
 ./build_package.sh
+build_package.sh

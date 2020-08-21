@@ -2,8 +2,7 @@
 > Sends a response email to a user
 """
 from email_controller.smtp_controller import GMailController, get_html_template
-from utils_package.data_controller.json_config import JSONConfig
-from utils_package.py_utils import primary_utils
+from base_configurations import BaseConfigurations
 
 
 class ResponseHandler(object):
@@ -11,9 +10,8 @@ class ResponseHandler(object):
 
     def __init__(self):
         """ Initialize class variables """
-        self.config = JSONConfig()
-        self.gmail = GMailController(self.config.get_smtp_dict('primary_gmail'))
-        self.utils = primary_utils
+        self.smtp_config = BaseConfigurations().smtp_configs()
+        self.gmail = GMailController(self.smtp_config['login_dict'], self.smtp_config['name'], self.smtp_config['port'])
 
     def send_response_email(self, email_address):
         """
