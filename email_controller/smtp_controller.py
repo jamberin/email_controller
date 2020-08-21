@@ -1,10 +1,11 @@
 """ Primary email_controller for SMTP control
-> Will handlge the default SMTP control to format HTML and send emails
+> Will handle the default SMTP control to format HTML and send emails
 > Configured for gmail only currently
 """
 from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTP
 from utils_package.py_utils.logger import logger
 from utils_package.data_controller.json_config import JSONConfig
+from base_configurations import DIRS
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import codecs
@@ -33,7 +34,7 @@ def get_html_template(template_name):
     :param template_name: Location of the file within the email templates directory
     :return: HTML template
     """
-    template_dir = json_config.get_email_controller_config('directories')['templates']
+    template_dir = DIRS['email.templates.html']
     template_location = template_dir + template_name
     file = codecs.open(template_location, 'r')
     f = file.read()
