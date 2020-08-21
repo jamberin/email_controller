@@ -4,7 +4,7 @@
 """
 from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTP
 from utils_package.py_utils.logger import logger
-from base_configurations import DIRS
+from email_controller.base_configurations import DIRS
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import codecs

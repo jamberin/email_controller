@@ -2,7 +2,7 @@
 > Sends a response email to a user
 """
 from email_controller.smtp_controller import GMailController, get_html_template
-from base_configurations import BaseConfigurations
+from email_controller.base_configurations import BaseConfigurations
 
 
 class ResponseHandler(object):

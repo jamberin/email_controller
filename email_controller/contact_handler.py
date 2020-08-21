@@ -10,7 +10,7 @@ from email_controller.smtp_controller import GMailController
 from utils_package.data_controller.scripts.email_controller.email_audit_queries import AuditWriter
 from datetime import datetime
 from utils_package.py_utils.logger import logger
-from base_configurations import BaseConfigurations, VARS
+from email_controller.base_configurations import BaseConfigurations, VARS
 
 
 class ContactHandler(object):
