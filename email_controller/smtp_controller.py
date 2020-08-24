@@ -50,6 +50,7 @@ class GMailController(object):
         """
         self.to_address = login_dict['user']
         server = SMTP(server, port)
+        server.ehlo()
         server.starttls()
         server.login(login_dict['user'], login_dict['pass'])
         self.server = server
