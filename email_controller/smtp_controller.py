@@ -51,10 +51,10 @@ class GMailController(object):
         :param port: Port for SMTP traffic
         """
         self.to_address = login_dict['user']
-        context = ssl.create_default_context()
-        server = SMTP_SSL(server, port, context=context)
+        self.context = ssl.create_default_context()
         self.login_dict = login_dict
         self.server = server
+        self.port = port
 
     def attempt_send_message(self, message, recipient, subject, message_type='text'):
         """
@@ -83,8 +83,9 @@ class GMailController(object):
         html_msg.attach(message_builder)
 
         try:
-            self.server.login(self.login_dict['user'], self.login_dict['pass'])
-            self.server.sendmail(self.to_address, recipient, html_msg.as_string())
+            email_server = SMTP_SSL(self.server, self.port, context=self.context)
+            email_server.login(self.login_dict['user'], self.login_dict['pass'])
+            email_server.sendmail(self.to_address, recipient, html_msg.as_string())
         except SMTPDataError or SMTPSenderRefused or SMTPRecipientsRefused or SMTPHeloError:
             logger.error('Issue with sending email')
             chk = False
