@@ -2,12 +2,14 @@
 > Will handle the default SMTP control to format HTML and send emails
 > Configured for gmail only currently
 """
-from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTP
-from utils_package.py_utils.logger import logger
-from email_controller.base_configurations import DIRS
+from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTP_SSL
+import ssl
+import codecs
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import codecs
+from utils_package.py_utils.logger import logger
+
+from email_controller.base_configurations import DIRS
 
 
 def log_email_payload(login_dict, message, recipient, subject):
@@ -49,10 +51,9 @@ class GMailController(object):
         :param port: Port for SMTP traffic
         """
         self.to_address = login_dict['user']
-        server = SMTP(server, port)
-        server.ehlo()
-        server.starttls()
-        server.login(login_dict['user'], login_dict['pass'])
+        context = ssl.create_default_context()
+        server = SMTP_SSL(server, port, context=context)
+        self.login_dict = login_dict
         self.server = server
 
     def attempt_send_message(self, message, recipient, subject, message_type='text'):
@@ -82,6 +83,7 @@ class GMailController(object):
         html_msg.attach(message_builder)
 
         try:
+            self.server.login(self.login_dict['user'], self.login_dict['pass'])
             self.server.sendmail(self.to_address, recipient, html_msg.as_string())
         except SMTPDataError or SMTPSenderRefused or SMTPRecipientsRefused or SMTPHeloError:
             logger.error('Issue with sending email')
