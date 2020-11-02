@@ -1,6 +1,7 @@
 """ Primary email_controller for SMTP control
 > Will handle the default SMTP control to format HTML and send emails
 > Configured for gmail only currently
+> Updated and confirmed working on server and locally
 """
 from smtplib import SMTPDataError, SMTPSenderRefused, SMTPRecipientsRefused, SMTPHeloError, SMTP_SSL
 import ssl
